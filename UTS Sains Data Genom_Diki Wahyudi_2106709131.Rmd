@@ -1,0 +1,949 @@
+---
+title: ''
+output:
+  pdf_document:
+    number_sections: FALSE
+    df_print: kable
+    fig_caption: yes
+    toc: FALSE
+geometry: left = 2cm, right = 2cm, top = 2cm, bottom = 2cm
+fontsize: 11pt
+header-includes:
+  - \usepackage{float}
+  - \usepackage{sectsty}
+  - \usepackage{paralist}
+  - \usepackage{setspace}\spacing{1.5}
+  - \usepackage{fancyhdr}
+  - \usepackage{lastpage}
+  - \usepackage{dcolumn}
+  - \usepackage{multicol}
+  - \usepackage{caption}
+  - \captionsetup[table]{name = Tabel}
+  - \captionsetup[figure]{name = Gambar}
+  - \usepackage[titles]{tocloft}
+  - \usepackage{hanging}
+  - \usepackage{hyperref}
+urlcolor: blue
+linkcolor: black
+editor_options:
+  chunk_ouput_type: console
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, massage = FALSE, comment = NA)
+options(tinytex.verbose = TRUE)
+```
+
+\allsectionsfont{\centering}
+\subsectionfont{\raggedright}
+\subsubsectionfont{\raggedright}
+
+\pagenumbering{gobble}
+
+\begin{centering}
+
+\pagenumbering{gobble}
+
+\vspace{1cm}
+
+\large
+{\bf UTS SAINS DATA GENOM}
+
+\vspace{2cm}
+
+```{r uni_logo, echo = F, out.width = "30%"}
+knitr::include_graphics("Logo UI.png")
+```
+
+\vspace{2cm}
+
+\large
+{\bf Disusun oleh:}
+
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{ll}
+  
+  \large{\bf Diki Wahyudi} & \large{\bf 2106709131} \\
+
+  \end{tabular}
+\end{table}
+
+\vspace{1cm}
+
+\large
+{\bf PROGRAM STUDI STATISTIKA\\FAKULTAS MATEMATIKA DAN ILMU PENGETAHUAN ALAM\\UNIVERSITAS INDONESIA\\OKTOBER 2023}
+
+\end{centering}
+
+\newpage
+
+\pagenumbering{roman}
+
+\newpage
+
+\renewcommand{\contentsname}{DAFTAR ISI}
+\addcontentsline{toc}{section}{\contentsname}
+\setcounter{tocdepth}{3}
+\tableofcontents
+\clearpage
+ 
+\newpage
+
+\newlength{\mylen}
+\renewcommand{\figurename}{Gambar}
+\renewcommand{\cftfigpresnum}{\figurename \enspace}
+\renewcommand{\cftfigaftersnum}{:}
+\settowidth{\mylen}{\cftfigpresnum \cftfigaftersnum}
+\addtolength{\cftfignumwidth}{\mylen}
+
+\renewcommand{\listfigurename}{DAFTAR GAMBAR}
+\addcontentsline{toc}{section}{\listfigurename}
+\listoffigures
+
+\newpage
+
+\renewcommand{\tablename}{Tabel}
+\renewcommand{\cfttabpresnum}{\tablename \enspace}
+\renewcommand{\cfttabaftersnum}{:}
+\settowidth{\mylen}{\cfttabpresnum \cfttabaftersnum}
+\addtolength{\cfttabnumwidth}{\mylen}
+
+\renewcommand{\listtablename}{DAFTAR TABEL}
+\addcontentsline{toc}{section}{\listtablename}
+\listoftables
+
+\newpage
+
+\section[PENDAHULUAN]{PENDAHULUAN}
+
+Kanker Payudara (*Breast Cancer*) adalah penyakit di mana sel-sel di payudara tumbuh tidak terkendali. Terdapat berbagai jenis kanker payudara. Jenis kanker payudara bergantung pada sel mana di payudara yang berubah menjadi kanker. Kebanyakan kanker payudara dimulai di saluran atau lobulus. Kanker payudara dapat menyebar ke luar payudara melalui pembuluh darah dan pembuluh getah bening. Ketika kanker payudara menyebar ke bagian tubuh lain, kanker tersebut dikatakan telah bermetastasis. Jenis kanker payudara yang paling umum yaitu sebagai berikut.
+
+  1. **Karsinoma duktal invasif**. Sel-sel kanker dimulai di saluran dan kemudian tumbuh di luar saluran ke bagian lain dari jaringan payudara. Sel kanker invasif juga dapat menyebar atau bermetastasis ke bagian tubuh lain.
+  2.  **Karsinoma lobular invasif**. Sel kanker dimulai di lobulus dan kemudian menyebar dari lobulus ke jaringan payudara di dekatnya. Sel kanker invasif ini juga dapat menyebar ke bagian tubuh lain.
+  
+Ada beberapa jenis kanker payudara lain yang kurang umum, seperti penyakit Paget, meduler (*medullary*), musinous (*mucinous*), dan inflamasi kanker payudara/*inflammatory breast cancer* (IBC). *Ductal carcinoma in situ* (DCIS) adalah penyakit payudara yang dapat menyebabkan kanker payudara invasif. Sel kanker tersebut hanya berada pada lapisan saluran dan belum menyebar ke jaringan lain di payudara \hyperlink{ref6}{[6]}.
+
+Kanker payudara, yang menyerang sekitar satu dari sembilan wanita di seluruh dunia, merupakan salah satu kanker yang paling luas penyebarannya di antara tumor ganas wanita \hyperlink{ref2}{[2]}. Diketahui bahwa kanker payudara memiliki heterogenitas yang tinggi pada tingkat molekuler. Menurut model pengetikan molekuler PAM50, terdapat subtipe luminal A, subtipe luminal B, subtipe positif reseptor faktor pertumbuhan epidermal manusia 2 (her2), dan subtipe kanker payudara mirip basal \hyperlink{ref10}{[10, 17]}. Kanker payudara adalah penyakit kompleks dengan karakteristik genetik dan molekuler yang berubah. Memahami sifat perubahan tersebut dapat memberikan peluang untuk pendekatan pengobatan individual. Saat ini, analisis keseluruhan genom adalah salah satu cara paling efisien untuk mempelajari suatu penyakit. Banyak peneliti fokus pada penanda prognostik atau terapeutik untuk identifikasi menggunakan analisis ekspresi diferensial.
+
+\section[METODE]{METODE}
+
+\pagenumbering{arabic}
+
+## *Import Library*
+
+```{r, warning = FALSE, message = FALSE}
+library(limma)
+library(ggplot2)
+library(dplyr)
+library(data.table)
+library(knitr)
+library(kableExtra)
+library(genefilter)
+library("annotate")
+library("hgu133plus2.db")
+library(GO.db)
+library(magrittr)
+library(ggpubr)
+```
+
+## *Import* Data
+
+Dataset yang akan digunakan pada analisis ini diambil dari Kaggle, yaitu GSE45827. Dataset GSE45827 berisi tentang ekspresi gen kanker payudara dari CuMiDa, terdiri atas 6 kelas, 54676 gen, dan 151 sampel. Ada 5 jenis kanker payudara (ditambah jaringan sehat) yang terdapat dalam dataset ini (kolom `type`).
+
+```{r}
+df <- fread("D:/Materi Kuliah UI/Sains Data Genom/Tugas Sains Data Genom/Breast_GSE45827.csv", 
+            header = TRUE)
+df <- data.frame(df)
+```
+
+Karena pada keterangan soal hanya perlu sampel sebesar 50% dari total gen, maka akan dipilih gen-gen tersebut secara *random* dengan *seed* `2106709131`.
+
+```{r}
+set.seed(2106709131)
+df <- df[, c(1:2, sample(3:ncol(df), size = (ncol(df) - 2)*0.5))]
+colnames(df) <- gsub("X", "", colnames(df))
+```
+
+Akan dicek berapa jumlah anggota per grup *type* kanker payudara yang ada dalam data tersebut.
+
+```{r}
+table(df$type)
+```
+
+```{r, fig.cap = "\\textit{Bar Plot} Jumlah Kategori \\textit{Type}"}
+ggplot(df, aes(x = type, fill = type)) + geom_bar()
+```
+
+Subtipe molekular basal merupakan subtipe terbanyak pada data ini. Berikut ini merupakan keterangan tentang tipe-tipe kanker payudara tersebut \hyperlink{ref5}{[5]}.
+
+-  *Luminal A breast cancer* 
+
+Kanker payudara Luminal A adalah reseptor estrogen positif dan reseptor progesteron positif, HER2 negatif, dan memiliki kadar protein Ki-67 yang rendah, yang membantu mengontrol seberapa cepat sel kanker tumbuh. Kanker luminal A cenderung tumbuh lebih lambat dibandingkan kanker lainnya, memiliki tingkat keparahan yang lebih rendah, dan memiliki prognosis yang baik.
+
+- *Luminal B breast cancer* 
+
+Kanker payudara luminal B adalah reseptor estrogen positif dan HER2 negatif, dan juga memiliki tingkat Ki-67 yang tinggi (yang menunjukkan pertumbuhan sel kanker yang lebih cepat) atau negatif terhadap reseptor progesteron.
+
+- *Luminal B-like breast cancer*
+
+Kanker payudara mirip luminal B adalah reseptor estrogen positif dan HER2 positif serta memiliki tingkat Ki-67 apa pun dan mungkin positif reseptor progesteron atau negatif reseptor progesteron. Kanker luminal B cenderung tumbuh lebih cepat dibandingkan kanker luminal A dan mempunyai prognosis yang sedikit lebih buruk.
+
+- HER2-*enriched breast cancer*
+
+Kanker payudara yang diperkaya HER2 adalah reseptor estrogen negatif dan reseptor progesteron negatif dan HER2 positif. Kanker yang diperkaya HER2 cenderung tumbuh lebih cepat dibandingkan kanker luminal dan mempunyai prognosis yang lebih buruk, namun biasanya berhasil diobati dengan obat terapi bertarget yang ditujukan pada protein HER2.
+
+- *Triple-negative* atau *basal-like breast cancer*
+
+Kanker payudara triple-negatif atau mirip basal adalah reseptor estrogen-negatif, reseptor progesteron-negatif, dan HER2-negatif. Kanker payudara triple-negatif lebih sering terjadi pada:
+  
+  -  orang dengan mutasi BRCA1;
+  -  wanita yang lebih muda;
+  -  perempuan dengan ras hitam.
+
+Kanker payudara *triple-negatif* dianggap lebih agresif dibandingkan kanker payudara luminal A atau luminal B.
+
+```{r}
+knitr::kable(df[1:10, 1:10], format = "latex", booktabs = TRUE, 
+             align = rep("c", 10), caption = "\\textit{Head} dari Dataframe Asli") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+```
+
+Terlihat bahwa bentuk dataframe belum sesuai dengan format data untuk analisis *differentially expressed genes*. Oleh karena itu, data tersebut akan diubah ke dalam format yang sesuai.
+
+```{r}
+row_name <- colnames(df[, -c(1, 2)])
+column_name <- df$samples
+type_c <- df$type
+df <- t(df[, -c(1, 2)])
+rownames(df) <- row_name 
+colnames(df) <- column_name
+knitr::kable(df[1:8, 1:8], format = "latex", booktabs = TRUE,
+             align = rep("c", 8), caption = "\\textit{Head} dari df") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position")) %>%
+  kable_styling(position = "center")
+```
+
+## $\log_2$ *Transform*
+
+Akan dicek apakah data perlu ditransformasi atau tidak.
+
+```{r}
+qx <- as.numeric(quantile(df, c(0.0, 0.25, 0.5, 0.75, 0.99, 1.0), na.rm = TRUE))
+LogC <- (qx[5]>100) || (qx[6] - qx[1]>50 && qx[2]>0)
+if (LogC){
+  df[which(df<=0)] <- NaN
+  df <- log2(df)
+}
+df[1:10, 1:10]
+```
+
+```{r}
+LogC
+```
+
+Terlihat bahwa data tersebut tidak berubah (tidak ditransformasi) karena `LogC = FALSE`. 
+
+```{r, fig.cap = "\\textit{Density Plot} dari Ekspresi Gen"}
+hist(df, col = "lightblue", prob = TRUE, xlab = "Ekspresi Gen", main = "") 
+lines(density(df), lwd = 2, col = "red") 
+```
+
+Karena deskripsi data tidak dapat dilihat detailnya, maka diasumsikan data telah ditransformsikan ke dalam bentuk $\log_2$.
+
+## *Gene Filtering*
+
+Selanjutnya, akan dilakukan *gene filtering*. Hal tersebut dilakukan untuk mengeluarkan gen-gen yang tidak banyak bervariasi antarsampel dan memiliki ekspresi yang kecil di seluruh sampel. Proses ini dilakukan agar dapat mengurangi terjadinya *false positif* (kesalahan tipe I yaitu $\alpha = \Pr(\mbox{Menolak} \ H_0|H_0 \ \mbox{benar})$) yang akan meningkatkan *power* (peluang hasil uji statistik untuk bebas dari kesalahan statistik tipe II) dari analisis data ini. *Gene filtering* akan dilakukan sesuai prosedur pada sumber \hyperlink{ref16}{[16]}.
+
+```{r}
+f1 <- pOverA(0.25, log2(100))
+f2 <- function(x)(IQR(x)>0.5)
+ff <- filterfun(f1, f2)
+selected <- genefilter(df, ff)
+# Sebelum filtering
+df2 <- df
+dim(df2)
+# Sesudah filtering
+df <- df[selected, ]
+dim(df)
+```
+
+Setelah tahap tersebut, akan dilakukan *plotting* untuk melihat perbedaan ekspresi gen sebelum dan sesudah *filtering*.
+
+```{r, fig.cap = "Grafik Perbandingan Ekspresi Gen sebelum dan sesudah \\textit{Filtering}"}
+par(mfrow = c(1, 2))
+hist(df2, main = "Original", col = "lightblue")
+hist(df, main = "Filtered", col = "lightblue")
+```
+
+\clearpage
+
+```{r}
+par(mfrow = c(1, 1))
+```
+
+Dari hasil di atas, didapatkan informasi bahwa sebelum dilakukan *filtering* terdapat 27337 *features*/*gene* dan setelah *filtering* tersisa 8543 gen. Gen yang disaring merupakan gen yang memiliki ekspresi rendah seperti terlihat pada histogram di atas.
+
+## LIMMA (*Linear Models for Microarray Data*)
+
+LIMMA adalah *library* untuk analisis data ekspresi gen microarray, khususnya digunakan pada model linier untuk menganalisis eksperimen yang dirancang dari *differential expression*. LIMMA memberikan kemampuan untuk menganalisis perbandingan antara banyak target RNA secara bersamaan dalam eksperimen yang dirancang rumit dan *random*. Metode empiris Bayesian digunakan untuk memberikan hasil yang stabil meskipun jumlah arraynya sedikit. Model linier dan fungsi ekspresi diferensial berlaku untuk semua teknologi ekspresi gen, termasuk microarray, RNA-seq, dan PCR kuantitatif \hyperlink{ref11}{[11]}.
+
+Proses selanjutnya akan menggunakan metode LIMMA untuk mengetahui ekspresi gen mana yang berbeda, sesuai kriteria soal.
+
+## Bagian 1
+
+Pertama, akan dicari gen yang berekspresi berbeda antara empat subtipe kanker: Luminal A, 
+Luminal B, Basal, dan HER.
+
+```{r}
+unique(type_c)
+table(type_c)
+kanker <- c("luminal_A", "luminal_B", "basal", "HER")
+exp1 <- df[, which(type_c %in% kanker)]
+dim(exp1)
+knitr::kable(exp1[1:10, 1:10], format = "latex", booktabs = TRUE,
+             align = rep("c", 10), caption = "\\textit{Head} dari exp1") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position")) %>%
+  kable_styling(position = "center")
+```
+
+Akan dibuat matriks model (*design matrix*) berdasarkan variabel `type1`. Dalam model matriks, akan digunakan `+ 0` dalam model yang menyetel intersep ke 0 sehingga efek `type1` menangkap ekspresi untuk grup tersebut, bukan perbedaan dari grup terhadap *base level*.
+
+```{r}
+# Create the design matrix
+type1 <- type_c[which(type_c %in% kanker)]
+des_mat <- model.matrix(~ type1 + 0)
+head(des_mat, 15)
+```
+
+Selanjutnya, akan dilakukan *fitting* model *differential expression* pada data. Model limma untuk data ini yaitu 
+
+$$\boldsymbol{Y}_j^T = (Y_{1j}, ..., Y_{N_j})$$
+$$E(\boldsymbol{Y}_j) = \boldsymbol{X}\boldsymbol{\beta}_j$$
+di mana $\boldsymbol{Y}_j$: ekspresi gen, $\boldsymbol{X}$: matriks model (*design matrix*) yang *full rank* (misalnya kondisi grup), dan $\boldsymbol{\beta}_j$: vektor efek dari kolom di matriks $\boldsymbol{X}$, $\boldsymbol{\beta}_j^T = (\beta_{j1}, \beta_{j2}, \beta_{j3}, \beta_{j4})$ dengan $\beta_{jk}$ merupakan ekspektasi dari level ekspresi dari gen $j$ dalam grup $k$. Keterangan level: Basal = 1, HER = 2, Luminal A = 3, dan Luminal B = 4.
+
+```{r}
+# Apply linear model to data
+fit <- lmFit(exp1, design = des_mat)
+# Apply empirical Bayes to smooth standard errors
+fit <- eBayes(fit)
+```
+
+Setelah *fitting* model, ingin diselidiki perbedaan di antara semua kelompok dengan menggunakan *contrast* sebagai berikut.
+
+$$\boldsymbol{C}_1 = \begin{bmatrix} 0 & -1 & 0 & -1 & 0 & 1 \\ 0 & 0 & -1 & 0 & -1 & -1 \\ 1 & 1 & 1 & 0 & 0 & 0 \\ -1 & 0 & 0 & 1 & 1 & 0 \end{bmatrix}$$
+
+\begin{equation} \label{eq:contrast1}
+\begin{split} 
+\boldsymbol{T}_j &= \boldsymbol{C}_1^T\boldsymbol{\beta}_j \\
+&= \begin{bmatrix} 0 & 0 & 1 & -1 \\ -1 & 0 & 1 & 0 \\ 0 & -1 & 1 & 0 \\ -1 & 0 & 0 & 1 \\ 0 & -1 & 0 & 1 \\ 1 & -1 & 0 & 0 \end{bmatrix} \begin{bmatrix} \beta_{j1} \\ \beta_{j2} \\ \beta_{j3} \\ \beta_{j4} \end{bmatrix} \\
+&= \begin{bmatrix} \beta_{j3} - \beta_{j4} \\ \beta_{j3} - \beta_{j1} \\ \beta_{j3} - \beta_{j2} \\ \beta_{j4} - \beta_{j1} \\ \beta_{j4} - \beta_{j2} \\ \beta_{j1} - \beta_{j2} \end{bmatrix}
+\end{split}
+\end{equation}
+
+Keterangan: $\boldsymbol{T}_j$ merupakan ekspektasi dari perbedaan dalam level ekspresi dari gen $j$ dengan perbandingan Luminal A versus Luminal B, Luminal A versus Basal, Luminal A versus HER, Luminal B versus Basal, Luminal B versus HER, dan Basal versus HER.
+
+```{r}
+contrast_matrix <- makeContrasts(
+  "luminal_A.vs.luminal_B" = type1luminal_A - type1luminal_B,
+  "luminal_A.vs.basal" = type1luminal_A - type1basal,
+  "luminal_A.vs.HER" = type1luminal_A - type1HER,
+  "luminal_B.vs.basal" = type1luminal_B - type1basal,
+  "luminal_B.vs.HER" = type1luminal_B - type1HER,
+  "basal.vs.HER" = type1basal - type1HER,
+  levels = colnames(des_mat)
+)
+contrast_matrix
+fit <- contrasts.fit(fit, contrast_matrix) 
+```
+
+Beberapa koreksi pengujian diperlukan setiap kali beberapa pengujian hipotesis (*multiple hypothesis tests*) dilakukan, untuk meminimalkan jumlah *false positif* yang diperoleh. Dalam analisis ini, akan digunakan metode *False Discovery Rate* (FDR) untuk melakukan koreksi *multiple hypothesis tests*, dan menetapkan batas signifikansi pada 0.05. Ini berarti bahwa hanya gen dengan nilai $p-value$ yang disesuaikan dengan FDR < 0.05 dan perubahan $\log_2$ absolut sebesar 1 atau lebih yang akan dianggap *berbeda secara signifikan*.
+
+```{r}
+# Identifying differentially expressed genes
+results <- decideTests(fit, p.value = 0.05, adjust.method = "fdr")
+summary(results)
+```
+
+Didapatkan informasi bahwa subtipe kanker yang paling banyak berbeda secara signifikan yaitu luminal A dan basal, dengan jumlah yang signifikan berbeda sebanyak 2928 + 2794 = 5722.  
+
+Selanjutnya, akan dibuat tabel hasil berdasarkan model yang dilengkapi kontras. Langkah ini akan menerapkan koreksi *multiple hypothesis tests* Benjamini-Hochberg. Default fungsi `topTable()` adalah menggunakan metode koreksi Benjamini-Hochberg.
+
+```{r}
+# Re-smooth the Bayes
+contrasts_fit <- eBayes(fit)
+# Apply multiple testing correction and obtain stats
+stats_df <- topTable(contrasts_fit, number = nrow(exp1)) %>%
+  tibble::rownames_to_column("Gene")
+knitr::kable(head(stats_df, 15), format = "latex", booktabs = TRUE,
+             align = rep("c", 11), caption = "\\textit{Head} dari stats\\_df") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+```
+
+Untuk menguji apakah hasil tersebut masuk akal, dapat dibuat plot dari salah satu gen teratas. Akan diekstrak data untuk gen `205225_at`, kemudian akan dibuat dataframe untuk tujuan visualisasi. Berdasarkan hasil di `stats_df`, diperkirakan keempat subtipe kanker tersebut berbeda secara signifikan.
+
+```{r}
+top_gene_df <- data.frame(X205225_at = exp1["205225_at", ], type1)
+```
+
+```{r, fig.cap = "\\textit{Scatter Plot} Ekspresi Gen 205225_at Berdasarkan Subtipe Kanker"}
+ggplot(top_gene_df, aes(x = type1, y = X205225_at, color = type1)) +
+  labs(y = "205225_at") + 
+  geom_jitter(width = 0.2, height = 0) + # Make this a jitter plot
+  theme_classic() # This makes some aesthetic changes
+```
+
+\clearpage
+
+Hasil visualisasi tersebut sejalan dengan `stat_df` sebelumnya di mana keempat subtipe kanker berbeda secara signifikan.
+
+Selanjutnya, akan dibuat *volcano plot* dari data tersebut.
+
+```{r}
+# Let's extract the contrast p-values for each and transform them with -log10()
+contrast_p_vals_df <- -log10(contrasts_fit$p.value) %>%
+  # Make this into a dataframe
+  as.data.frame() %>%
+  # Store genes as their own column
+  tibble::rownames_to_column("Gene") %>%
+  # Make this into long format
+  tidyr::pivot_longer(dplyr::contains("vs"),
+                      names_to = "contrast",
+                      values_to = "neg_log10_p_val")
+# Let's extract the fold changes from stats_df
+log_fc_df <- stats_df %>%
+  # Only want to keep the `Gene` column as well
+  dplyr::select("Gene", dplyr::contains("vs")) %>%
+  # Make this a longer format
+  tidyr::pivot_longer(dplyr::contains("vs"),
+                      names_to = "contrast",
+                      values_to = "logFoldChange")
+plot_df <- log_fc_df %>%
+  dplyr::inner_join(contrast_p_vals_df,
+                    by = c("Gene", "contrast"),
+                    # This argument will add the given suffixes to the column names
+                    # from the respective dataframes, helping us keep track of which columns
+                    # hold which types of values
+                    suffix = c("_log_fc", "_p_val"))
+# Print out what this looks like
+knitr::kable(head(plot_df), format = "latex", booktabs = TRUE,
+             align = rep("c", 4), caption = "\\textit{Head} dari plot\\_df") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position")) %>%
+  kable_styling(position = "center")
+```
+
+```{r, dev = "png", fig.cap = "\\textit{Volcano Plot} dari Masing-Masing \\textit{Contrast}"}
+# Convert p-value cutoff to negative log 10 scale
+p_val_cutoff <- -log10(0.05)
+# Absolute value cutoff for fold changes
+abs_fc_cutoff <- 5
+plot_df <- plot_df %>% 
+  dplyr::mutate(signif_label = dplyr::case_when(
+    abs(logFoldChange)>abs_fc_cutoff & neg_log10_p_val>p_val_cutoff ~ "p-val and FC",
+    abs(logFoldChange)>abs_fc_cutoff ~ "FC",
+    neg_log10_p_val>p_val_cutoff ~ "p-val",
+    TRUE ~ "NS"))
+volcanoes_plot <- ggplot(plot_df,
+  aes(
+    x = logFoldChange, # Fold change as x value
+    y = neg_log10_p_val, # -log10(p-value) for the contrasts
+    color = signif_label # Color code by significance cutoffs variable
+  )) +
+  # Make a scatter plot with points that are 30% opaque using `alpha`
+  geom_point(alpha = 0.3) +
+  # Draw our `p_val_cutoff` for line here
+  geom_hline(yintercept = p_val_cutoff, linetype = "dashed") +
+  # Using our `abs_fc_cutoff` for our lines here
+  geom_vline(xintercept = c(-abs_fc_cutoff, abs_fc_cutoff), linetype = "dashed") +
+  # Specify color
+  scale_colour_manual(values = c("#67a9cf", "darkgray", "gray", "#a1d76a")) +
+  # Let's be more specific about what this p-value is in our y axis label
+  ylab("Contrast -log10(p value)") +
+  # This makes separate plots for each contrast
+  facet_wrap(~ contrast) + 
+  theme(text = element_text(size = 7)) + theme_classic()
+# Print out the plot
+volcanoes_plot
+```
+
+Akan dicari top 50 dari gen-gen yang berbeda antara keempat subtipe kanker tersebut menggunakan fungsi `topTable`, sama seperti yang telah dilakukan sebelumnya. 
+
+```{r}
+topResult1 <- topTable(contrasts_fit, number = 50)
+```
+
+Selanjutnya, akan ditampilkan pola ekspresi dari 50 gen tersebut dengan menggunakan *heat map* dan *box plot*.
+
+```{r}
+# Selected genes
+rownames(topResult1)
+# Extract selected genes names
+selected1 <- rownames(exp1) %in% rownames(topResult1)
+# Extract the expression of the selected genes
+exptop50_1 <- exp1[selected1, ]
+```
+
+\clearpage
+
+```{r, fig.cap = "\\textit{Heat Map} dari Ekspresi Gen Dataframe exp1"}
+# Heat map of the top genes
+heatmap(exptop50_1)
+```
+
+```{r}
+# Heat map dari kategori grup
+exptop50_12 <- exptop50_1
+colnames(exptop50_12) <- type1
+```
+
+\clearpage
+
+```{r, fig.cap = "\\textit{Heat Map} dari Ekspresi Gen Dataframe exp1 dengan Label Grup"}
+heatmap(exptop50_12)
+```
+
+Terlihat bahwa ekpresi gen dari subtipe kanker payudara Luminal A berbeda dengan Basal.
+
+```{r, fig.cap = "\\textit{Box Plot} dari Top 4 Gen \\textit{Differentialy Expressed} Dataframe exp1"}
+# Boxplot for the top 4 genes
+par(mfrow = c(2, 2))
+for(i in 1:4){
+  df_bp1 <- data.frame(y = exptop50_1[i, ], type1)
+  df_bp1$type1 <- factor(df_bp1$type1)
+  boxplot(df_bp1$y ~ df_bp1$type1, xlab = "type", ylab = "Expression Gene",
+          col = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"), 
+          cex.axis = 0.7, cex.lab = 0.7, main = rownames(exptop50_1)[i])
+}
+par(mfrow = c(1, 1))
+```
+
+Dari *box plot* di atas, terlihat bahwa setiap gen memiliki karakteristik yang berbeda terhadap keempat subtipe kanker payudara.
+
+## Bagian 2
+
+Kedua, akan dicari gen yang berekpresi berbeda antara sel sehat sehat dengan sel kanker. Lima subtipe kanker pada data ini yaitu Luminal A,  Luminal B, Basal, HER, dan Cell Line akan digolongkan sebagai sel kanker, sedangkan sel normal akan digolongkan sebagai sel sehat.
+
+```{r}
+exp2 <- df
+knitr::kable(exp2[1:10, 1:10], format = "latex", booktabs = TRUE,
+             align = rep("c", 10), caption = "\\textit{Head} dari exp2") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position")) %>%
+  kable_styling(position = "center")
+```
+
+Akan dibuat matriks model (*design matrix*) berdasarkan variabel `type2`. Dalam model matriks, akan digunakan `+ 0` dalam model yang menyetel intersep ke 0 sehingga efek `type2` menangkap ekspresi untuk grup tersebut, bukan perbedaan dari grup terhadap *base level*.
+
+```{r}
+kanker2 <- c("luminal_A", "luminal_B", "basal", "HER", "cell_line")
+# Create the design matrix
+type2 <- replace(type_c, which(type_c %in% kanker2), "cancer") 
+des_mat2 <- model.matrix(~ type2 + 0)
+head(des_mat2)
+```
+
+Selanjutnya, akan dilakukan *fitting* model *differential expression* pada data. Model limma untuk data ini yaitu 
+
+$$\boldsymbol{Y}_j^T = (Y_{1j}, ..., Y_{N_j})$$
+$$E(\boldsymbol{Y}_j) = \boldsymbol{X}\boldsymbol{\beta}_j$$
+di mana $\boldsymbol{Y}_j$: ekspresi gen, $\boldsymbol{X}$: matriks model (*design matrix*) yang *full rank* (misalnya kondisi grup), dan $\boldsymbol{\beta}_j$: vektor efek dari kolom di matriks $\boldsymbol{X}$, $\boldsymbol{\beta}_j^T = (\beta_{j1}, \beta_{j2})$ dengan $\beta_{jk}$ merupakan ekspektasi dari level ekspresi dari gen $j$ dalam grup $k$. Keterangan level: Kanker = 1 dan Normal = 2.
+
+```{r}
+# Apply linear model to data
+fit2 <- lmFit(exp2, design = des_mat2)
+# Apply empirical Bayes to smooth standard errors
+fit2 <- eBayes(fit2)
+```
+
+Setelah *fitting* model, ingin diselidiki perbedaan di antara kelompok sehat dengan kanker menggunakan *contrast* sebagai berikut.
+
+$$\boldsymbol{C}_2 = \begin{bmatrix} -1 \\ 1 \end{bmatrix}$$
+\begin{equation} \label{eq:contrast2}
+\begin{split} 
+\boldsymbol{T}_j &= \boldsymbol{C}_2^T\boldsymbol{\beta}_j \\
+&= \begin{bmatrix} -1 & 1 \end{bmatrix} \begin{bmatrix} \beta_{j1} \\ \beta_{j2} \end{bmatrix} \\
+&= \begin{bmatrix} \beta_{j2} - \beta_{j1} \end{bmatrix}
+\end{split}
+\end{equation}
+
+Keterangan: $\boldsymbol{T}_j$ merupakan ekspektasi dari perbedaan dalam level ekspresi dari gen $j$ dengan perbandingan Normal versus Kanker.
+
+```{r}
+contrast_matrix2 <- makeContrasts(
+  "normal-vs-cancer" = type2normal - type2cancer,
+  levels = colnames(des_mat2)
+)
+contrast_matrix2
+fit2 <- contrasts.fit(fit2, contrast_matrix2) 
+```
+
+Jumlah gen yang diekspresikan berbeda secara signifikan yaitu sebagai berikut.
+
+```{r}
+# Identifying differentially expressed genes
+results2 <- decideTests(fit2, p.value = 0.05, adjust.method = "fdr")
+summary(results2)
+```
+
+Secara keseluruhan, didapatkan jumlah gen DE yang bagus untuk perbandingan antara sel sehat dan sel kanker. Pada *output* tersebut, `Up` mengacu pada gen dengan peningkatan ekspresi pada sel sehat relatif terhadap sel kanker, sedangkan `Down` mengacu pada gen dengan penurunan ekspresi pada sel sehat relatif terhadap sel kanker. Terdapat 1123 gen yang memiliki peningkatan ekspresi dan 2889 gen yang memiliki penurunan ekspresi pada sel sehat relatif terhadap sel kanker.
+
+Gen yang diekspresikan secara berbeda dari analisis limma di atas dapat dianalisis lebih lanjut menggunakan fungsi `topTreat` dari `limma`. Fungsi tersebut memberikan *output* tabel seperti Spreadsheet di mana setiap baris adalah gen dan kolom berisi informasi seperti $p-value$ (`P.Value`), $p-value$ yang disesuaikan dengan FDR (`adj.P.Val`), $t$-statistic (`t`) , perubahan kali lipat $\log_2$ (`logFC`), dan lain-lain.
+
+```{r}
+# Re-smooth the Bayes
+fit2 <- eBayes(fit2)
+allDEresults <- topTreat(fit2, coef = "normal-vs-cancer", 
+                         number = Inf, adjust.method = "fdr") %>% as.data.frame() 
+allDEresults <- allDEresults %>%
+  dplyr::mutate(isSignificant = case_when(
+    adj.P.Val<0.05 & abs(logFC)>1 ~ TRUE, 
+    TRUE ~ FALSE # If conditions in the line above are not met, gene is not DE
+    ))
+```
+
+Cuplikan beberapa gen yang diekspresikan secara berbeda ditunjukkan di bawah ini.
+
+```{r}
+sigDEresults <- allDEresults %>%
+  dplyr::filter(isSignificant==TRUE)
+knitr::kable(head(sigDEresults, 15), format = "latex", booktabs = TRUE,
+             align = rep("c", 7), caption = "\\textit{Head} dari sigDEresults") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+```
+
+Untuk menguji apakah hasil tersebut masuk akal, dapat dibuat plot dari salah satu gen teratas. Akan diekstrak data untuk gen `216333_x_at`, kemudian akan dibuat dataframe untuk tujuan visualisasi. Berdasarkan hasil di `sigDEresults`, diperkirakan ekpresi gen dari sel normal dan sel kanker tersebut berbeda secara signifikan.
+
+```{r}
+top_gene_df2 <- data.frame(X216333_x_at = exp2["216333_x_at", ], type2)
+```
+
+```{r, fig.cap = "\\textit{Scatter Plot} Ekspresi Gen 216333_x_at antara Sel Sehat versus Sel Kanker"}
+ggplot(top_gene_df2, aes(x = type2, y = X216333_x_at, color = type2)) +
+  labs(y = "216333_x_at") + 
+  geom_jitter(width = 0.2, height = 0) + # Make this a jitter plot
+  theme_classic() # This makes some aesthetic changes
+```
+
+\clearpage
+
+Hasil visualisasi tersebut sejalan dengan `sigDEresults` sebelumnya di mana sel normal dan sel kanker berbeda secara signifikan.
+
+*Volcano plot* untuk data ini yaitu sebagai berikut.
+
+```{r, dev = "png", fig.cap = "\\textit{Volcano Plot} dari Sel Sehat versus Sel Kanker"}
+volcano_plot <- allDEresults %>% 
+  ggplot(aes(x = logFC, y = -log10(P.Value), colour = isSignificant)) +
+  geom_point(size = 1, alpha = 0.5) +
+  scale_colour_manual(values = c("grey", "red")) +
+  ggtitle("Differential gene expression results")
+volcano_plot
+```
+
+\clearpage
+
+Akan dicari gen yang diekspresikan paling berbeda sebanyak 50 gen teratas.
+
+```{r}
+topResult2 <- topTable(fit2, coef = "normal-vs-cancer", number = 50)
+```
+
+Selanjutnya, akan ditampilkan pola ekspresi dari 50 gen tersebut dengan menggunakan *heat map* dan *box plot*.
+
+```{r}
+# Selected genes
+rownames(topResult2)
+# Extract selected genes names
+selected2 <- rownames(exp2) %in% rownames(topResult2)
+# Extract the expression of the selected genes
+exptop50_2 <- exp2[selected2, ]
+```
+
+\clearpage
+
+```{r, fig.cap = "\\textit{Heat Map} dari Ekspresi Gen Dataframe exp2"}
+# Heat map of the top genes
+heatmap(exptop50_2)
+```
+
+
+```{r}
+# Heat map dari kategori grup
+exptop50_22 <- exptop50_2
+colnames(exptop50_22) <- type2
+```
+
+\clearpage
+
+```{r, fig.cap = "\\textit{Heat Map} dari Ekspresi Gen Dataframe exp2 dengan Label Grup"}
+heatmap(exptop50_22)
+```
+
+*Heat map* di atas menggambarkan ekspresi dari tiap gen (baris) dan tiap sampel (kolom). Warna merah menandakan gen tersebut memiliki ekspresi lebih tinggi (*overexpression*). Terlihat pengelompokkan yang relatif "jelas" antara sampel grup dengan sel sehat dan sampel grup dengan sel kanker.
+
+```{r, fig.cap = "\\textit{Box Plot} dari Top 4 Gen \\textit{Differentialy Expressed}"}
+# Boxplot for the top 4 genes
+par(mfrow = c(2, 2))
+for(i in 1:4){
+  df_bp2 <- data.frame(y = exptop50_2[i, ], type2)
+  df_bp2$type2 <- factor(df_bp2$type2)
+  boxplot(df_bp2$y ~ df_bp2$type2, xlab = "type", ylab = "Expression Gene",
+          col = c("red", "grey"), main = rownames(exptop50_2)[i])
+}
+par(mfrow = c(1, 1))
+```
+
+Terlihat bahwa gen-gen tersebut memiliki ekspresi yang sangat berbeda antara sel sehat dengan sel kanker.
+
+\newpage
+
+\section[HASIL]{HASIL}
+
+Setelah melakukan analisis *differentially expressed genes*, proses selanjutnya adalah mencari nama gen dan deskripsi dari gen yang telah dipilih pada proses sebelumnya. Karena *link* \url{https://sbcb.inf.ufrgs.br/carbm/static/cumida/Genes/Breast/GSE45827/Breast_GSE45827.csv} tidak bisa dibuka, detail tentang nama gen dan deskripsinya tidak dapat diketahui. Namun, ditemukan *website* yang mengandung informasi tentang dataset `GSE4582` yaitu pada *link* berikut. \url{https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE45827}. Dalam *website* tersebut, didapatkan informasi bahwa chip menggunakan platform GPL570 dan anotasi yang digunakan yaitu HG-U133_Plus_2. Diasumsikan bahwa data pada Kaggle \hyperlink{ref9}{[9]} memiliki informasi yang sama dengan data pada *website* NCBI tersebut.
+
+## Bagian 1
+
+Selanjutnya, akan dicari nama gen dan deskripsi dari gen yang telah dipilih pada bagian sebelumnya.
+
+```{r, message = FALSE, warning = FALSE}
+# See gene name and description
+GeneSelected1 <- select(hgu133plus2.db, rownames(topResult1),
+                        c("SYMBOL", "ENTREZID", "GENENAME"))
+ids1 <- rownames(topResult1)
+GeneSelected1 <- select(hgu133plus2.db, ids1, c("SYMBOL", "ENTREZID", "GENENAME", "GO"))
+knitr::kable(head(GeneSelected1), format = "latex", booktabs = TRUE,
+             align = rep("c", 7), caption = "\\textit{Head} dari GeneSelected1") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+```
+
+Setelah mengetahui nama gen, selanjutnya ingin diketahui model dan fungsi dari gen tersebut dengan menggunakan Gene Ontology. Terdapat tiga aspek fungsi gen yaitu
+
+  1.  *molecular function* (aktivitas molekuler dari hasil gen);
+  2.  *cellular component*, di mana hasil gen tersebut aktif;
+  3.  *biological process*, informasi dimana proses dan *pathways* biologi dari gen tersebut ikut serta.
+
+Untuk melakukan hal tersebut, diperlukan *package* `GO.db` yang akan menghubungkan nama-nama gen dengan Gene Ontology.
+
+```{r, message = FALSE, warning = FALSE}
+# Gene ontology for the top genes
+GOselected1 <- select(GO.db, GeneSelected1$GO, c("TERM", "GOID"))
+# Combine the result
+finalres1 <- cbind(GeneSelected1, GOselected1)
+knitr::kable(head(finalres1), format = "latex", booktabs = TRUE,
+             align = rep("c", 9), caption = "\\textit{Head} dari finalres1") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+```
+
+```{r}
+write.csv2(finalres1, file = "D:/Materi Kuliah UI/Sains Data Genom/Tugas Sains Data Genom/gen_de1.csv")
+```
+
+Untuk versi lengkapnya, dapat dilihat pada *link* berikut. \href{https://docs.google.com/spreadsheets/d/1PXc7akXGkz7qgWaSVSeg90ohnXoLc1uVRFq66FwEk2A/edit?usp=sharing}{gen\_de1}
+
+Dari top 50 gen tersebut, akan dipilih dua gen untuk dicari deskripsi dan kaitannya dengan kanker payudara.
+
+### 1. *Estrogen Receptor* 1 (ESR1)
+
+Gen ini mengkodekan reseptor estrogen dan faktor transkripsi yang diaktifkan ligan. Protein kanonik mengandung domain *N-terminal ligand-independent transactivation*, domain *central DNA binding*, domain *hinge* dan domain *C-terminal ligand-dependent transactivation*. Protein terlokalisasi di nukleus, di mana protein tersebut dapat membentuk homodimer atau heterodimer dengan reseptor estrogen 2. Protein yang dikodekan oleh gen ini mengatur transkripsi banyak gen yang diinduksi estrogen yang berperan dalam pertumbuhan, metabolisme, perkembangan seksual, kehamilan, dan fungsi reproduksi lainnya dan diekspresikan di banyak jaringan nonreproduksi. Reseptor yang dikodekan oleh gen ini memiliki peran penting dalam kanker payudara, kanker endometrium, dan osteoporosis. Gen ini dilaporkan memiliki lusinan varian transkrip karena penggunaan promotor alternatif dan penyambungan alternatif, namun sifat keseluruhan dari banyak varian ini masih belum pasti \hyperlink{ref13}{[13]}.
+
+Laporan patologi yang dilakukan akan mencakup hasil uji reseptor hormon, tes yang memberi tahu kita apakah sel kanker payudara memiliki reseptor untuk hormon estrogen dan progesteron. Reseptor hormon adalah protein, yang ditemukan di dalam dan pada sel payudara, yang menangkap sinyal dari hormon yang memerintahkan sel untuk tumbuh. Kanker payudara bersifat reseptor estrogen positif jika memiliki reseptor untuk estrogen. Hal ini menunjukkan bahwa sel-sel kanker, seperti sel-sel payudara normal, mungkin menerima sinyal dari estrogen yang memberitahu sel-sel tersebut untuk tumbuh. Kanker merupakan reseptor progesteron positif jika memiliki reseptor progesteron. Hal tersebut berarti bahwa sel kanker mungkin menerima sinyal dari progesteron yang memerintahkan mereka untuk tumbuh. Sekitar dua dari setiap tiga kanker payudara dites positif terhadap reseptor hormon. Pengujian reseptor hormon penting karena hasilnya dapat membantu penderita kanker dan dokter dalam memutuskan apakah kanker kemungkinan akan merespon obat-obatan terapi hormonal.
+
+Penting untuk diketahui bahwa beberapa kanker payudara dengan reseptor hormon positif dapat kehilangan reseptornya seiring berjalannya waktu. Hal sebaliknya juga terjadi, yaitu kanker dengan reseptor hormon negatif dapat mengembangkan reseptor hormon. Jika kanker payudara muncul kembali setelah pengobatan, ada baiknya penderita kanker bertanya kepada dokter tentang biopsi lain untuk menguji reseptor hormon pada kanker. Jika sel kanker tidak lagi memiliki reseptor, terapi hormonal tidak mungkin membantu mengobati kanker. Jika sel telah mengembangkan reseptor hormon, terapi hormonal mungkin membantu dalam proses penyembuhan \hyperlink{ref4}{[4]}.
+
+### 2. *Carbonic Anhydrase* 12 (CA12)
+
+*Carbonic Anhydrase* (CA) adalah keluarga besar metaloenzim seng yang mengkatalisis hidrasi karbon dioksida yang dapat dibalik. Mereka berpartisipasi dalam berbagai proses biologis, termasuk respirasi, kalsifikasi, keseimbangan asam-basa, resorpsi tulang, dan pembentukan aqueous humor, cairan serebrospinal, air liur, dan asam lambung. Produk gen ini adalah protein membran tipe I yang banyak diekspresikan di jaringan normal, seperti ginjal, usus besar, dan pankreas, dan ditemukan diekspresikan berlebih pada 10% karsinoma ginjal sel jernih. Tiga varian transkrip yang mengkode isoform berbeda telah diidentifikasi untuk gen ini \hyperlink{ref12}{[12]}.
+
+Penelitian intensif terkonsentrasi pada peran CA IX pada tumor hipoksia, dengan CA XII yang kurang diteliti namun juga dianggap sebagai pemicu tumor hipoksia. CA XII pertama kali diidentifikasi pada kanker sel ginjal sebagai bagian dari penelitian yang bertujuan untuk mengidentifikasi antigen tumor baru melalui penerapan SEREX, identifikasi serologis antigen dengan kloning ekspresi rekombinan. Gen yang mengkode CA XII, CA12, merupakan target dari *hypoxia-inducible factor 1* (HIF-1), dan ciri umum dari banyak karsinoma ginjal adalah mutasi pada gen penekan tumor *von Hippel-Lindau* (VHL), sebuah pengatur HIF-1. Berbeda dengan CA IX, ekspresi CA XII diinduksi oleh estrogen dan CA XII sangat diekspresikan pada kanker payudara reseptor estrogen positif. Penelitian lain juga menunjukkan perbedaan antara ekspresi dan fungsi CA IX dan CA XII pada berbagai jenis kanker, termasuk keterlibatan CA XII dalam mendorong invasi dan migrasi sel tumor. Peran CAXII dalam *tumorigenesis* mungkin bergantung pada subtipe sel kanker, *hypoxic microenvironment*, perkembangan penyakit, dan fenotip resisten obat yang baru-baru ini dijelaskan \hyperlink{ref18}{[18]}.
+
+Selanjutnya, akan dibuat *muldimensional scaling plot* dari top 50 gen tersebut untuk mengetahui persebaran subtipe kanker berdasarkan dimensi yang lebih rendah yaitu dimensi 2.
+
+```{r}
+mds1 <- t(exptop50_12) %>% dist() %>% cmdscale() %>% as_tibble
+colnames(mds1) <- c("Dim.1", "Dim.2")
+mds1 <- mds1 %>% mutate(groups = colnames(exptop50_12))
+```
+
+\clearpage
+
+```{r, fig.cap = "\\textit{Multidimensional Scaling Plot} dari exptop50\\_12", message = FALSE, warning = FALSE}
+# Plot MDS
+ggscatter(mds1, x = "Dim.1", y = "Dim.2", label = colnames(exptop50_12), 
+          color = "groups", palette = "jco", size = 1, ellipse = TRUE,
+          ellipse.type = "convex", repel = TRUE)
+```
+
+Makin dekat suatu label, makin sama sampelnya. Meskipun terdapat beberapa label yang tumpang tindih, secara keseluruhan terlihat bahwa subtipe kanker mengelompok dengan jenis yang sama.
+
+## Bagian 2
+
+Pada bagian ini, akan dicari nama gen dan deskripsi gen pada top 50 gen yang berbeda dari analisis limma sebelumnya. 
+
+```{r, message = FALSE, warning = FALSE}
+# See gene name and description
+GeneSelected2 <- select(hgu133plus2.db, rownames(topResult2),
+                        c("SYMBOL", "ENTREZID", "GENENAME"))
+ids2 <- rownames(topResult2)
+GeneSelected2 <- select(hgu133plus2.db, ids2, c("SYMBOL", "ENTREZID", "GENENAME", "GO"))
+knitr::kable(head(GeneSelected2), format = "latex", booktabs = TRUE,
+             align = rep("c", 7), caption = "\\textit{Head} dari GeneSelected2") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+```
+
+Selanjutnya, akan dilakukan *gene ontology*.
+
+```{r, message = FALSE, warning = FALSE}
+# Gene ontology for the top genes
+GOselected2 <- select(GO.db, GeneSelected2$GO, c("TERM", "GOID"))
+# Combine the result
+finalres2 <- cbind(GeneSelected2, GOselected2)
+knitr::kable(head(finalres2), format = "latex", booktabs = TRUE,
+             align = rep("c", 9), caption = "\\textit{Head} dari finalres2") %>%
+  kableExtra::kable_styling(latex_options = c("scale_down", "HOLD_position"))
+```
+
+```{r}
+write.csv2(finalres2, file = "D:/Materi Kuliah UI/Sains Data Genom/Tugas Sains Data Genom/gen_de2.csv")
+```
+
+Untuk versi lengkapnya, dapat dilihat pada *link* berikut. \href{https://docs.google.com/spreadsheets/d/1g--Z4KEjNnN-l-n7Y1UGNxtp7uM1D2aF2ck-PLQ1kc4/edit?usp=sharing}{gen\_de2}
+
+Dari top 50 gen tersebut, akan dipilih dua gen untuk dicari deskripsi dan kaitannya dengan kanker payudara.
+
+### 1. *Tenascin* XB (TNXB)
+
+Gen ini mengkodekan anggota keluarga *tenascin* dari *extracellular matrix glycoproteins*. *Tenascins* memiliki efek antiperekat, berbeda dengan fibronektin yang bersifat perekat. Protein ini diperkirakan berfungsi dalam pematangan matriks selama penyembuhan luka, dan kekurangannya telah dikaitkan dengan jaringan ikat *disorder Ehlers-Danlos syndrome*. Gen ini melokalisasi ke wilayah kelas III kompleks histokompatibilitas utama (MHC) pada kromosom 6. Gen ini adalah salah satu dari empat gen dalam *cluster* ini yang telah diduplikasi. Salinan duplikat gen ini tidak lengkap dan merupakan pseudogen yang ditranskripsi tetapi tidak mengkode protein. Struktur gen ini tidak biasa karena tumpang tindih dengan gen CREBL1 dan CYP21A2 pada ujung 5' dan 3'. Berbagai varian transkrip yang mengkode isoform berbeda telah ditemukan untuk gen ini \hyperlink{ref15}{[15]}. Penelitian pada \hyperlink{ref8}{[8]} mendapatkan bahwa *tenascin* sangat diekspresikan pada *breast invasive carcinoma* (TCGA-BRCA). 
+
+### 2. *Oligophrenin* 1 (OPHN1)
+
+Gen ini mengkode protein *Rho-GTPase-activating* yang mendorong hidrolisis GTP anggota subfamili Rho. Protein Rho adalah mediator penting transduksi sinyal intraseluler, yang mempengaruhi migrasi sel dan morfogenesis sel. Mutasi pada gen ini bertanggung jawab atas kecacatan *OPHN1-related X-linked cognitive* dengan *cerebellar hypoplasia* dan *distinctive facial dysmorhphism* \hyperlink{ref14}{[14]}. Berdasarkan \hyperlink{ref7}{[7]}, gen ini diekspresikan secara berlebihan (*overexpression*) dalam sel *peripheral blood mononuclear*, payudara, plasenta, dan otak janin.
+
+Selanjutnya, akan dibuat *muldimensional scaling plot* dari top 50 gen tersebut untuk mengetahui persebaran sel kanker dengan sel normal berdasarkan dimensi yang lebih rendah yaitu dimensi 2.
+
+```{r}
+mds2 <- t(exptop50_22) %>% dist() %>% cmdscale() %>% as_tibble
+colnames(mds2) <- c("Dim.1", "Dim.2")
+mds2 <- mds2 %>% mutate(groups = colnames(exptop50_22))
+```
+
+\clearpage
+
+```{r, fig.cap = "\\textit{Multidimensional Scaling Plot} dari exptop50_22", message = FALSE, warning = FALSE}
+# Plot MDS
+ggscatter(mds2, x = "Dim.1", y = "Dim.2", label = colnames(exptop50_22), 
+          color = "groups", palette = "jco", size = 1, ellipse = TRUE,
+          ellipse.type = "convex", repel = TRUE)
+```
+
+Terlihat bahwa sel sehat/normal terpisah dengan sel kanker yang menandakan bahwa top 50 gen tersebut memang benar berbeda secara signifikan.
+
+\newpage
+
+\section[KESIMPULAN]{KESIMPULAN}
+
+## Bagian 1
+
+Analisis *differentially expressed genes* telah dilakukan dengan menggunakan metode limma. Dengan menggunakan *contrast* pada persamaan (\ref{eq:contrast1}), didapatkan gen-gen yang signifikan berbeda seperti terlihat pada tabel berikut. 
+
+\begin{table}[hbt!]
+	\centering
+	\caption{\textit{Differentially Expressed Genes} dari Dataframe exp1}
+	\resizebox{\textwidth}{!}{\begin{tabular}{c|cccccc} \hline
+		& Luminal A vs Luminal B & Luminal A vs Basal & Luminal A vs HER & Luminal B vs Basal & Luminal B vs HER & Basal vs HER \\ \hline \hline
+		\emph{Down} & 1313 & 2928 & 2179 & 2656 & 1532 & 1680 \\ 
+		\emph{Not Significance} & 6064 & 2821 & 4311 & 3255 & 5509 & 5229 \\ 
+		\emph{Up} & 1166 & 2794 & 2053 & 2632 & 1502 & 1634 \\ \hline
+	\end{tabular}}
+\end{table}
+
+Dari tabel tersebut, didapatkan informasi bahwa subtipe kanker yang paling banyak berbeda secara signifikan yaitu luminal A dan basal, dengan jumlah yang signifikan berbeda sebanyak 2928 + 2794 = 5722.
+
+Berikut ini merupakan top 50 gen yang berbeda secara signifikan berdasarkan analisis limma sebelumnya.
+
+```{r}
+rownames(topResult1)
+```
+
+Gen tersebut mempunyai nama sebagai berikut.
+
+```{r}
+unique(finalres1$GENENAME)
+```
+
+Gen-gen tersebut signifikan berbeda pada analisis limma sebelumnya. Gen tersebut direkomendasikan sebagai gen yang berekpresi berbeda di antara empat subtipe kancer payudara yaitu Luminal A, Luminal B, Basal, dan HER.
+
+## Bagian 2
+
+Analisis *differentially expressed genes* telah dilakukan dengan menggunakan metode limma. Dengan menggunakan *contrast* pada persamaan (\ref{eq:contrast2}), didapatkan gen-gen yang signifikan berbeda seperti terlihat pada tabel berikut. 
+
+\begin{table}[hbt!]
+	\centering
+	\caption{\textit{Differentially Expressed Genes} dari Dataframe exp2}
+	\begin{tabular}{c|c} \hline
+		& Normal vs Kanker \\ \hline \hline
+		\emph{Down} & 2889 \\ 
+		\emph{Not Significance} & 4531 \\ 
+		\emph{Up} & 1123 \\ \hline
+	\end{tabular}
+\end{table}
+
+Dari tabel tersebut, didapatkan informasi bahwa terdapat 1123 gen yang memiliki peningkatan ekspresi dan 2889 gen yang memiliki penurunan ekspresi pada sel sehat relatif terhadap sel kanker.
+
+Berikut ini merupakan top 50 gen yang berbeda secara signifikan berdasarkan analisis limma sebelumnya.
+
+```{r}
+rownames(topResult2)
+```
+
+Gen tersebut mempunyai nama sebagai berikut.
+
+```{r}
+unique(finalres2$GENENAME)
+```
+
+Gen-gen tersebut signifikan berbeda pada analisis limma sebelumnya. Gen tersebut direkomendasikan sebagai gen yang berekpresi berbeda di antara sel sehat dan sel kanker.
+
+\newpage
+
+\section[REFERENSI]{REFERENSI}
+
+\begin{hangparas}{0.25in}{1}
+
+[1] alexslemonade.github.io. (2020). \textit{Differential Expression - Several Groups - Microarray}. \url{https://alexslemonade.github.io/refinebio-examples/02-microarray/differential-expression_microarray_02_several-groups.html}
+
+\hypertarget{ref2}{[2]} Andrew, M. G., dkk. (2015). \textit{Effects of Age on the Detection and Management of Breast Cancer}. Cancers 7, 908–929. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4491690/}
+
+[3] biocellgen-public.svi.edu.au. (2021). \textit{Differential Gene Expression Analysis}. \url{https://biocellgen-public.svi.edu.au/sahmri-bulk-rnaseq/de.html#Gene_Ontology_(GO)_Enrichment_Analysis}
+
+\hypertarget{ref4}{[4]} breastcancer.org. (n.d.). \textit{Breast Cancer Hormone Receptor Status}. \url{https://www.breastcancer.org/pathology-report/hormone-receptor-status#section-hormone-receptor}
+s-estrogen-and-progesterone
+
+\hypertarget{ref5}{[5]} breastcancer.org. (n.d.). \textit{Molecular Subtypes of Breast Cancer}. \url{https://www.breastcancer.org/types/molecular-subtypes}
+
+\hypertarget{ref6}{[6]} cdc.gov. (2023). \textit{What is Breast Cancer?}. \url{https://www.cdc.gov/cancer/breast/basic_info/what-is-breast-cancer.htm}
+
+\hypertarget{ref7}{[7]} genecards.org. (2023). \textit{Gene - Oligophrenin 1}. \url{https://www.genecards.org/cgi-bin/carddisp.pl?gene=OPHN1} 
+
+\hypertarget{ref8}{[8]} journals.plos.org. (n.d.). \textit{Down-regulation of Tenascin-C Inhibits Breast Cancer Cells Development by Cell Growth, Migration, and Adhesion Impairment}. \url{https://journals.plos.org/plosone/article/figure?id=10.1371/journal.pone.0237889.g001}
+
+\hypertarget{ref9}{[9]} kaggle.com. (2019). \textit{Breast Cancer Gene Expression - CuMiDa}. \url{https://www.kaggle.com/datasets/brunogrisci/breast-cancer-gene-expression-cumida/}
+
+\hypertarget{ref10}{[10]} Liu, M. C., dkk. (2015). \textit{PAM50 Gene Signatures and Breast Cancer Prognosis with Adjuvant Anthracycline- and Taxane-Based Chemotherapy}: Correlative Analysis of C9741 (Alliance). NPJ Breast Cancer 2, 15023 10.1038/npjbcancer.2015.23. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5501351/}
+
+\hypertarget{ref11}{[11]} mit.edu. (n.d.). \textit{Introduction to the LIMMA Package}. \url{https://web.mit.edu/~r/current/arch/i386_linux26/lib/R/library/limma/html/01Introduction.html#}
+
+\hypertarget{ref12}{[12]} ncbi.nlm.nih.gov. (2023). \textit{Carbonic Anhydrase 12 [Homo sapiens (Human)]}. \url{https://www.ncbi.nlm.nih.gov/gene/771}
+
+\hypertarget{ref13}{[13]} ncbi.nlm.nih.gov. (2023). \textit{Estrogen Receptor 1 [Homo sapiens (Human)]}. \url{https://www.ncbi.nlm.nih.gov/gene/2099}
+
+\hypertarget{ref14}{[14]} ncbi.nlm.nih.gov. (2023). \textit{Oligophrenin 1 [Homo sapiens (Human)]}. \url{https://www.ncbi.nlm.nih.gov/gene/4983}
+
+\hypertarget{ref15}{[15]} ncbi.nlm.nih.gov. (2023). \textit{Tenascin XB [Homo sapiens (Human)]}. \url{https://www.ncbi.nlm.nih.gov/gene/7148}
+
+\hypertarget{ref16}{[16]} Nygard, S. (2010). \textit{Microarray Data Analysis Using R/Bioconductor}. \url{https://irefindex.vib.be/wiki/images/2/25/R-lab-sn.pdf}
+
+[17] Parker, J. S., dkk. (2009). \textit{Supervised Risk Predictor of Breast Cancer Based on Intrinsic Subtypes}. J. Clin. Oncol. 27, 1160–1167 10.1200/JCO.2008.18.1370. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2667820/}
+
+\hypertarget{ref18}{[18]} Tonissen, K. F., \& Poulsen, SA. (2021). \textit{Carbonic Anhydrase XII Inhibition Overcomes P-glycoprotein-mediated Drug Resistance: a Potential New Combination Therapy in Cancer}. Cancer Drug Resistance. 4, no.2: 343-55. \url{http://dx.doi.org/10.20517/cdr.2020.110} 
+
+[19] Wang, Y., dkk. (2021). \textit{Identifying Breast Cancer Subtypes Associated Modules and Biomarkers by Integrated Bioinformatics Analysis}. \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7796196/}
+
+\end{hangparas}
