@@ -10,4 +10,4 @@ The analysis methodology hinges upon LIMMA, a robust statistical framework tailo
 
 ### Uploaded File Description
 - `UTS Sains Data Genom_Diki Wahyudi_2106709131.Rmd`: R Markdown script for performing LIMMA analysis on the breast cancer genomic dataset.
-- `Project Model Survival_Kelompok 8.pdf`: Comprehensive report summarizing the findings and conclusions of the LIMMA analysis on the breast cancer genomic dataset. 
+- `UTS Sains Data Genom_Diki Wahyudi_2106709131.pdf`: Comprehensive report summarizing the findings and conclusions of the LIMMA analysis on the breast cancer genomic dataset. 
